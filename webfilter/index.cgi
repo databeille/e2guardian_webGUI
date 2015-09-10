@@ -1,8 +1,13 @@
 #!/bin/sh
 
-#Sends content-type
+# Sends content-type
 echo "Content-type: text/html"
 echo 
+
+# Get variables
+WORKING_DIR=$(echo "$DOCUMENT_ROOT$SCRIPT_NAME" | sed s/\\index.cgi//g)
+
+source $WORKING_DIR*config
 
 echo "<html>"
 echo "<head>"
@@ -14,7 +19,7 @@ echo "</head><body><div id=\"layout\">"
 
 # Catch users group
 
-#Catch HTTP GET values
+# Catch HTTP GET values
 OPTS=`echo $QUERY_STRING | sed 's/&/ /g'`
 for opt in $OPTS
 do
@@ -28,9 +33,8 @@ set -- weightedphraselist exceptionphraselist bannedsitelist greysitelist banned
 
 # Catch configuration files
 
-FIRSTGROUP="/etc/e2guardian/e2guardianf1.conf"
-
-#Starting a menu
+FIRSTGROUP="$E2G_CONFDIR*/e2guardianf1.conf"
+# Starting a menu
 MENU="<div id=\"menu\"><div id=\"main_menu\" class=\"pure-menu\"><ul>"
 
 while [ $# -gt 0 ]
@@ -56,9 +60,18 @@ CONTENT="<div id=\"main\"><div id=\"wrapper\">"
 # Starting content
 CONTENT="$CONTENT<div id=\"content\">"
 
+# Display message if any
+[ ! "$message" = "" ] && CONTENT="$CONTENT<div id=\"message\">$message</div>"
+
 # Starting <form>
-CONTENT="$CONTENT<form name=\"edit\" method=\"POST\" action=\"post.cgi\"><input type=\"text\" id=\"hash\" name=\"hash\" value=\"hash\"/><input type=\"text\" id=\"filename\" name=\"filename\" value=\"$edit\"/>"
-CONTENT="$CONTENT<textarea id=\"textarea\" name=\"textarea\" rows=\"30\" cols=\"125\">$(eval cat \$$edit)</textarea>"
+CONTENT="$CONTENT<form name=\"edit\" method=\"POST\" action=\"post.cgi\">"
+CONTENT="$CONTENT<input type=\"$INPUTTYPE\" id=\"case\" name=\"case\" value=\"edit\"/>"
+CONTENT="$CONTENT<input type=\"$INPUTTYPE\" id=\"filealone\" name=\"filealone\" value=\"$edit\"/>"
+CONTENT="$CONTENT<input type=\"$INPUTTYPE\" id=\"hash\" name=\"hash\" value=\"$(eval md5sum \$$edit | awk '{print $1}')\"/>"
+CONTENT="$CONTENT<input type=\"$INPUTTYPE\" id=\"filename\" name=\"filename\" value=\"$(eval echo \$$edit)\"/>"
+CONTENT="$CONTENT<textarea id=\"textarea\" name=\"textarea\" rows=\"30\" cols=\"80\">"
+[ ! "$edit" = "" ] && CONTENT="$CONTENT$(eval cat \$$edit)"
+CONTENT="$CONTENT</textarea>"
 CONTENT="$CONTENT<input type=\"submit\" value=\"Envoyer\"></form>"
 # Ending content
 CONTENT="$CONTENT</div></div></div>"
