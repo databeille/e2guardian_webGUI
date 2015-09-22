@@ -1,0 +1,110 @@
+body {
+  margin: 0;
+  padding: 0;
+  color: black;
+  background: white;
+  font-family: verdana, arial, sans-serif;
+  font-size: 100%;
+  font-weight: normal;
+}
+
+a {
+  color: black;
+  text-decoration: none;
+  border-bottom: 1px dotted black;
+}
+
+a:visited {
+  color: gray;
+}
+
+a:hover {
+  border-bottom: 1px solid black;
+}
+
+div.page {
+  margin: 0 1em 0 1em;
+}
+
+h1 {
+  padding: 0.4em;
+  font-size: 120%;
+  text-align: left;
+  color: white;
+  background: #0f298f;
+}
+
+h2 {
+  font-size: 110%;
+  text-align: left;
+  font-weight: bold;
+}
+
+div.periodselector {
+  float: right;
+}
+
+div.monthselector {
+  display: inline;
+}
+
+form.yearselector {
+  display: inline;
+}
+
+div.side {
+  width: 20%;
+  float: right;
+}
+
+div.main {
+  width: 79%;
+}
+
+table {
+  margin: auto;
+  border-collapse: collapse;
+  width: 100%;
+  text-align: center;
+  font-size: 80%;
+}
+
+th {
+  padding: 0.2em;
+  border: 1px solid #0f298f;
+  text-align: center;
+  color: white;
+  background: #2b3f8f;
+}
+
+th a {
+  color: white;
+  text-decoration: none;
+  border-bottom: 1px dotted white;
+}
+
+th a:visited {
+  color: white;
+}
+
+th a:hover {
+  border-bottom: 1px solid white;
+}
+
+td {
+  padding: 0.2em;
+  border: 1px solid #0f298f;
+  background: white;
+}
+
+tr.total {
+  border-top: 3px double #0f298f;
+  font-weight: bold;
+}
+
+div.copyright {
+  margin: 0.5em;
+  padding: 0.5em;
+/*  border-top: 1px solid #0f298f; */
+  text-align: center;
+}

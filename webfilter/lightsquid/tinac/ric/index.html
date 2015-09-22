@@ -1,0 +1,114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!-- LightSquid TPL v1.7.1 -->
+<html>
+
+<head>
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="generator" content="LightSquid - http://lightsquid.sf.net">
+  <link rel="stylesheet" href="get.cgi?css=css/lightsquid" type="text/css">
+  <title>LightSquid :: Index</title>
+</head>
+
+<body>
+
+  <h1>##MSG_HEADER##</h1>
+
+  <div class="page">
+    
+    <div class="periodselector">
+      <div class="monthselector">
+  <!-- [[	month start-->
+        <a href="##MONTHURL_L##">##MONTHURL_B##</a>
+  <!-- ]]	month end-->
+      </div>
+      <form class="yearselector" name="yearselectform" action="index.cgi" method="get">
+        <select name="year" onchange="document.forms['yearselectform'].submit()">
+    <!-- [[	year start-->
+          ##YEAROPTION##
+    <!-- ]]	year end-->
+        </select>
+        <input type="hidden" name="month" value="all">
+      </form>
+    </div>
+    
+    <h2>##MSG_WORK_PERIOD##: ##WORKPERIOD##</h2>
+
+    <div class="side">
+      <table>
+        <thead>
+          <tr>
+            <th colspan="2">##MSG_TOP_SITES##</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><a href="##TOP_MONTH_L##">##TOP_MONTH_B##</a></td>
+            <td><a href="##TOP_MONTH_L##">##TOP_YEAR_B##</a></td>
+          </tr>
+        </tbody>
+      </table>
+      <table>
+        <thead>
+          <tr>
+            <th colspan="2">##MSG_TOTAL##</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><a href="##TOTAL_MONTH_L##">##TOTAL_MONTH_B##</a></td>
+            <td><a href="##TOTAL_YEAR_L##">##TOTAL_YEAR_B##</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="main">
+    
+      <table>
+        <thead>
+          <tr>
+            <th>##MSG_DATE##</th>
+            <th>##MSG_USERS##</th>
+<!-- HIDE oversize start -->
+            <th>##MSG_OVERSIZE##</font></th>
+<!-- HIDE oversize end -->	  
+            <th>##MSG_BYTES##</th>
+            <th>##MSG_AVERAGE##</th>
+            <th>##MSG_HIT%##</th>
+          </tr>
+        </thead>
+        
+        <tbody>
+<!-- [[ day start-->
+          <tr>
+            <td>##DAYDATE##</td>
+            <td>##DAYUSERS##</td>
+<!-- HIDE oversize start-->
+            <td>##DAYOVERUSERS##</td>
+<!-- HIDE oversize end-->
+            <td>##DAYBYTES##</td>
+            <td>##DAYAVERAGE##</td>
+            <td>##DAYCACHEHIT##%</td>
+          </tr>
+<!-- ]] day end-->
+          <tr class="total">
+            <td>##MSG_TOTAL_AVERAGE##:</td>
+            <td>##USERAVERAGE##</td>
+<!-- HIDE oversize start-->
+            <td>##OVERUSERAVERAGE##</td>
+<!-- HIDE oversize end -->
+            <td>##TOTAL##</td>
+            <td>##TOTALAVERAGE##</td>
+            <td>##AVERAGEHIT##%</td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+
+  </div>
+
+  <div class="copyright">##COPYRIGHT##</div>
+
+</body>
+</html>

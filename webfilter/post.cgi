@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 
-if [ "$REQUEST_METHOD" = POST ]; then
+if [ "$REQUEST_METHOD" = "POST" ]; then
 	read -n $CONTENT_LENGTH POST_STRING
 fi
 
@@ -53,11 +53,6 @@ case "$CASE" in
 			}
 		}
 	}
-        ;;
-  *)
-        exit 1
-esac
-
 # Write content
 
 echo "Content-type: text/html"
@@ -114,3 +109,23 @@ echo "SERVER_SOFTWARE = $SERVER_SOFTWARE" ;
 }
 
 echo "</body></html>"
+
+        ;;
+  logs)
+	HASH=$(echo -n -e $(uhttpd -d "$hash"))
+	FILEALONE=$(echo -n -e $(uhttpd -d "$filealone"))
+	FILENAME=$(echo -n -e $(uhttpd -d "$filename"))
+	TEXTAREA=$(echo -n -e $(uhttpd -d "$textarea"))
+
+	echo "Content-Type: text/plain"
+	echo "Content-Disposition: attachment; filename=\"$FILEALONE\""
+	echo ""
+	while read -r line
+		do
+		echo $line
+		shift;
+		done < $FILENAME
+	;;
+  *)
+        exit 1
+esac
