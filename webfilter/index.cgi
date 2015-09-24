@@ -1,9 +1,5 @@
 #!/bin/sh
 
-# Sends content-type
-echo "Content-type: text/html"
-echo 
-
 # Get variables and source config file
 WORKING_DIR=$(echo "$DOCUMENT_ROOT$SCRIPT_NAME" | sed s/\\index.cgi//g)
 source $WORKING_DIR*config
@@ -16,9 +12,37 @@ do
   VALUE=`echo $opt | sed 's/=/ /g' | awk '{print $2}' |  sed 's,%,\\\x,g' | sed 's/+/ /g'`
   eval "$NAME=\$VALUE"
 done
+reformat_lightsquid() {
+	LSCGI=$1
+	[ -f "$WORKING_DIR*lightsquid/$LSCGI.cgi" ] &&  {
+		echo "La page demandée n'existe pas."
+	} || {
+		LSCONTENT=$($WORKING_DIR*lightsquid/$LSCGI.cgi | tail -n +4)
+#		LSCONTENT=$(echo $LSCONTENT)
+
+		## replaces references to "index.cgi"
+		LSCONTENT=`echo "$LSCONTENT" | sed 's/index.cgi/index.cgi?logs=stats/g'`
+		
+		## replaces references to a direct cgi script
+		set -- topsites month_detail year_detail whousesite day_detail group_detail user_detail user_month user_year bigfiles graph user_time get
+		while [ $# -gt 0 ]
+			do
+			[ "$1" = "get" ] && 
+			{	
+				## replaces references to "get.cgi"	
+				LSCONTENT=`echo "$LSCONTENT" | sed 's/get.cgi/tinac.cgi/g'`
+			} || {
+				LSCONTENT=`echo "$LSCONTENT" | sed 's/'$1'.cgi?/index.cgi?logs=stats\&page='$1'\&/g'`
+			}
+			shift;
+		done
+	}
+	echo "$LSCONTENT"
+}
+
+
 
 # Catch users group
-
 # Catch configuration files
 E2GCONFIG="$E2G_CONFDIR*/e2guardian.conf"
 FIRSTGROUP="$E2G_CONFDIR*/e2guardianf1.conf"
@@ -51,27 +75,9 @@ E2GF1="$E2GF1</ul></li>"
 LOGS="<li class=\"dropdown\"><a class=\"menu\" href=\"?logs=config\">Logs</a><ul class=\"dropdown-menu\">"
 LOGS="$LOGS<li><a href=\"?logs=config\">Configuration</a></li>"
 LOGS="$LOGS<li><a href=\"?logs=$(echo $LOGFILE | sed "s@$LOGFILEDIRNAME/@@g")\">View</a></li>"
+LOGS="$LOGS<li><a href=\"?logs=stats\">Statistics</a></li>"
 
 LOGS="$LOGS</ul></li>"
-echo "<html>"
-echo "<head>"
-echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />"
-echo "<title>Filtre Web e2guardian</title>"
-echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"tinac.cgi?style/rendering.css\">"
-echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"tinac.cgi?style/side-menu.css\">"
-echo "</head><body>"
-echo "<header>"
-echo "<div class=\"fill\">"
-echo "<div class=\"container\">"
-echo "<a class=\"brand\" href=\"#\">E2Guardian</a>"
-echo "<ul class=\"nav\">"
-echo "$E2GF1"
-echo "$LOGS"
-echo "</ul>"
-echo "</div>"
-echo "</div>"
-echo "</header>"
-echo "<div id=\"layout\" class=\"container\">"
 
 # Starting a menu
 MENU="<div id=\"menu\"><div id=\"main_menu\" class=\"pure-menu\"><ul>"
@@ -152,6 +158,11 @@ case "$logs" in
         	shift;
 		done
 	;;
+	stats)
+	# Display stats tables
+	[ "$page" == "" ] && page=index
+	CONTENT="$CONTENT$(reformat_lightsquid $page)"
+	;;
 	*)
 	[ "$LOGFILE" = "" || "$loglevel" = "0"] && CONTENT="$CONTENT logging is disabled"
 	CONTENT="$CONTENT<textarea id=\"textarea\" name=\"textarea\" rows=\"30\" cols=\"80\">"
@@ -173,12 +184,33 @@ case "$logs" in
 esac
 	
 }
+echo "Content-type: text/html"
+echo 
 
-# Ending content
-CONTENT="$CONTENT</div></div></div>"
+#echo "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">"
+echo "<html>"
+echo "<head>"
+echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />"
+echo "<title>Filtre Web e2guardian</title>"
+echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"tinac.cgi?style/rendering.css\" />"
+echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"tinac.cgi?style/side-menu.css\" />"
+echo "</head><body>"
+echo "<header>"
+echo "<div class=\"fill\">"
+echo "<div class=\"container\">"
+echo "<a class=\"brand\" href=\"#\">E2Guardian</a>"
+echo "<ul class=\"nav\">"
+echo "$E2GF1"
+echo "$LOGS"
+echo "</ul>"
+echo "</div>"
+echo "</div>"
+echo "</header>"
+echo "<div id=\"layout\" class=\"container\">"
+
 
 #Display page
 #echo "$MENU"
-echo "$CONTENT"
+echo "$CONTENT</div></div></div>"
 
 echo "</div></body></html>"
