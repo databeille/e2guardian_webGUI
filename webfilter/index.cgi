@@ -2,7 +2,8 @@
 
 # Get variables and source config file
 WORKING_DIR=$(echo "$DOCUMENT_ROOT$SCRIPT_NAME" | sed s/\\index.cgi//g)
-source $WORKING_DIR*config
+cd "$WORKING_DIR"
+source config
 
 # Catch HTTP GET values and set variables
 OPTS=`echo $QUERY_STRING | sed 's/&/ /g'`
@@ -44,8 +45,8 @@ reformat_lightsquid() {
 
 # Catch users group
 # Catch configuration files
-E2GCONFIG="$E2G_CONFDIR*/e2guardian.conf"
-FIRSTGROUP="$E2G_CONFDIR*/e2guardianf1.conf"
+E2GCONFIG="$(./command.cgi e2config)"
+FIRSTGROUP="$(./command.cgi e2fconfig 1)"
 
 # What is the logfile ?
 LOGFILE="$(grep -i -e 'loglocation = ' $E2GCONFIG | awk -F= '{print $2}' | sed "s/'//g")"
@@ -160,14 +161,14 @@ case "$logs" in
 	;;
 	stats)
 	# Display stats tables
-	[ "$page" == "" ] && page=index
+	[ "$page" == "" ] && page="index"
 	CONTENT="$CONTENT$(reformat_lightsquid $page)"
 	;;
 	*)
-	[ "$LOGFILE" = "" || "$loglevel" = "0"] && CONTENT="$CONTENT logging is disabled"
-	CONTENT="$CONTENT<textarea id=\"textarea\" name=\"textarea\" rows=\"30\" cols=\"80\">"
-	CONTENT="$CONTENT$(eval cat $(dirname $LOGFILE)/$logs)"
-	CONTENT="$CONTENT</textarea>"
+	([ "$LOGFILE" = "" ] || [ "$loglevel" = "0" ]) && CONTENT="$CONTENT logging is disabled"
+#	CONTENT="$CONTENT<textarea id=\"textarea\" name=\"textarea\" rows=\"30\" cols=\"80\">"
+#	CONTENT="$CONTENT$(eval cat $(dirname $LOGFILE)/$logs)"
+#	CONTENT="$CONTENT</textarea>"
 	# Starting <form>
 	CONTENT="$CONTENT<form name=\"logs\" method=\"POST\" action=\"post.cgi\">"
 	CONTENT="$CONTENT<input type=\"$INPUTTYPE\" id=\"case\" name=\"case\" value=\"logs\"/>"
@@ -176,7 +177,9 @@ case "$logs" in
 	CONTENT="$CONTENT<input type=\"$INPUTTYPE\" id=\"filename\" name=\"filename\" value=\"$(dirname $LOGFILE)/$logs\"/>"
 	CONTENT="$CONTENT$(ls -1c $(dirname $LOGFILE) | while read line
 						do
-						echo "<div><a href=\"?logs=$line\">$line</a><br/></div>"
+						echo "<div><a href=\"?logs=$line\">"
+						[ "$logs" = "$line" ] && echo ">>> "
+						echo "$line</a><br/></div>"
 						shift;
 					done)"
 	CONTENT="$CONTENT<input type=\"submit\" value=\"Télécharger\"></form>"
