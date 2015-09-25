@@ -7,7 +7,9 @@ ACTION="$1"
 
 # Get variables and source config file
 WORKING_DIR=$(echo "$DOCUMENT_ROOT$SCRIPT_NAME" | sed s/\\index.cgi//g)
-source $WORKING_DIR*config
+[ "$WORKING_DIR" = "" ] && WORKING_DIR="$PWD"
+CONFIG="config"
+. $WORKING_DIR/$CONFIG
 
 case "$ACTION" in
 	e2config)
@@ -17,7 +19,8 @@ case "$ACTION" in
 		[ "$2" == "" ] && {
 			echo "$E2GCONFIG"
 		} || {
-			echo "$(grep -i -e "$2 = " $E2GCONFIG | awk -F= '{print $2}' |  sed "s/ //g")"
+			echo "$(grep -i -e "$2 = " $E2GCONFIG | \
+			awk -F= '{print $2}' |  sed "s/ //g")"
 		}
 	;;
 	e2fconfig)
@@ -27,19 +30,43 @@ case "$ACTION" in
 		[ "$2" = "" ] && GROUPNUM="1"
 		echo "$E2G_CONFDIR/e2guardianf$GROUPNUM.conf"
 	;;
+	fileext)
+		# returns file extension of the filename given
+		y=${2%.*}
+		echo $2 | sed 's@'${y##*/}'@@'
+	;;
 	loglinetype)
 		# returns detected e2guardian's logtype dependending of first field given
 		# takes the value of the "first field" as a parameter
 		[ "$2" = "" ] && exit 1
+		shift
 		# Seems to be a timestamp line = squid
-		[ ! "$(echo $2 | grep -Eo '^[0-9]{10}[.][0-9]{3}')" = "" ] && { echo "squid" ; exit 0 ; }
+		[ ! "$(echo $* | grep -Eo '^[0-9]{10}[.][0-9]{3}')" = "" ] \
+		&& { echo "squid" ; exit 0 ; }
 		# Seems to be a e2guardian csv
-		[ ! "$(echo $2 | grep -Eo '^\"[0-9]{4}[.][0-9]{1,2}[.][0-9]{1,2}')" = "" ] && { echo "csv" ; exit 0 ; }
+		[ ! "$(echo $* | grep -Eo '^\"[0-9]{4}[.][0-9]{1,2}[.][0-9]{1,2}')" = "" ] \
+		&& { echo "csv" ; exit 0 ; }
+		# Seems to be a dansguardian logfile
+		[ ! "$(echo $* | grep -Eo '^[0-9]{4}[.][0-9]{1,2}[.][0-9]{1,2}')" = "" ] \
+		&& { echo "dansguardian" ; exit 0 ; }
 	;;
-	sablier)
-		# returns a char to display work in progress
-		# takes number of lines as parameter $2
-		# takes current line number as parameter $3
+	logrotate)
+		# Rotate and compress last current log
+		# Includes time of action into filename
+		# Provides a new empty logfile
+		LOGFILE="$(./command.cgi e2config loglocation)"
+		FILEEXT="$(./command.cgi fileext $(basename $LOGFILE))"
+		RKVLOGFILE="$(echo $LOGFILE | sed 's/'$FILEEXT'$/_'$(date "+%Y%m%d%H%M")$FILEEXT'/')"
+		echo $RKVLOGFILE
+		# Copy logfile
+		cp $LOGFILE $RKVLOGFILE
+		gzip $RKVLOGFILE
+		> $LOGFILE
+	;;
+	percent)
+		# returns the percentage of a work in progress
+		# takes total amount of work to process as parameter $2
+		# takes current amount of work already processed as parameter $3
 		PERCENT=`expr $3 \* 100 / $2`
 		[ "$PERCENT" -le "9" ] && PERCENT="0$PERCENT"
 		echo "$PERCENT%"

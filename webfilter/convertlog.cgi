@@ -17,8 +17,7 @@ LOGFILEPATH="$(dirname $LOGFILE)"
 LOGFILENAME=$(basename $LOGFILE)
 
 #What is logfile suffix ?
-y=${LOGFILENAME%.*}
-LOGFILEEXT=$(echo $LOGFILENAME | sed 's@'${y##*/}'@@')
+LOGFILEEXT=$(./command.cgi fileext $LOGFILENAME)
 
 # Converted logfile name includes "_convert2ls" before file extension
 CONVERTEDLOGFILE="$LOGFILEPATH/$(basename $LOGFILENAME $LOGFILEEXT)_convert2ls$LOGFILEEXT"
@@ -33,8 +32,8 @@ while read line
 	LINENUMBER=$((LINENUMBER+1))
 	# What's logline type ?
 	LOGLINETYPE=$(./command.cgi loglinetype $(echo $line | cut -d" " -f1))
-	SABLIER=$(./command.cgi sablier $NBLINES $LINENUMBER)
-	echo -ne "$SABLIER\r"
+	PERCENT=$(./command.cgi percent $NBLINES $LINENUMBER)
+	echo -ne "$PERCENT\r"
 	case "$LOGLINETYPE" in
 		csv)
 		# "TIME" field

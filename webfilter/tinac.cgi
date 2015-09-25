@@ -35,7 +35,6 @@ case "$EXT" in
 	DATA=$(./lightsquid/get.cgi $EXT=$IMAGE | tail -n +3 | hexdump -v -e '"\\\x" 1/1 "%02x"')
 #	CONTENTLENGTH=$(echo $DATA | awk '{print length($0)}')
 	;;
-	
 	*)
 	#Entering directory
 	cd $WORKING_DIR/tinac
