@@ -6,12 +6,33 @@
 ACTION="$1"
 
 # Get variables and source config file
-WORKING_DIR=$(echo "$DOCUMENT_ROOT$SCRIPT_NAME" | sed s/\\index.cgi//g)
-[ "$WORKING_DIR" = "" ] && WORKING_DIR="$PWD"
+#WORKING_DIR=$(echo "$DOCUMENT_ROOT$SCRIPT_NAME" | sed s/\\command.cgi//g)
+[ "$WORKING_DIR" = "" ] && WORKING_DIR="$(dirname $0)"
 CONFIG="config"
 . $WORKING_DIR/$CONFIG
 
 case "$ACTION" in
+	checklogformat)
+		# Check log format allows us to generate stats
+		# Fix log format and logfile before lightsquid starts parsing
+		[ ! "$(./command.cgi e2config logfileformat)" = "3" ] && {
+			/etc/init.d/e2guardian stop
+			uci set e2guardian.e2guardian.logfileformat=3
+			uci commit
+			cd /www/cgi-bin/webfilter
+			./convertlog.cgi
+			LOGLOCATION="$(./command.cgi e2config loglocation)"
+			LOGLOCATIONEXT="$(./command.cgi fileext $LOGLOCATION)"
+			CONVERTEDLOG="$(echo $LOGLOCATION | sed 's/'$LOGLOCATIONEXT'$/_convert2ls/')$LOGLOCATIONEXT"
+			cp -f $LOGLOCATION $LOGLOCATION.$(date "+%Y%m%d%H%M")
+			chown nobody:nogroup $LOGLOCATION.$(date "+%Y%m%d%H%M")
+			cp -f $CONVERTEDLOG $LOGLOCATION
+			chown nobody:nogroup $LOGLOCATION
+			rm -f $CONVERTEDLOG
+			./lightsquid/lightparser.pl
+			/etc/init.d/e2guardian start
+		}
+	;;
 	e2config)
 		# returns E2Guardian config file path if $2 is not set
 		# returns E2Guardian config file value if $2 is set
@@ -32,8 +53,9 @@ case "$ACTION" in
 	;;
 	fileext)
 		# returns file extension of the filename given
+		
 		y=${2%.*}
-		echo $2 | sed 's@'${y##*/}'@@'
+		echo $(basename $2) | sed 's@'${y##*/}'@@'
 	;;
 	loglinetype)
 		# returns detected e2guardian's logtype dependending of first field given
