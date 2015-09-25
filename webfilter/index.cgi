@@ -162,7 +162,11 @@ case "$logs" in
 	stats)
 	# Display stats tables
 	[ "$page" == "" ] && page="index"
-	CONTENT="$CONTENT$(reformat_lightsquid $page)"
+	[ "$(ls -l lightsquid/report)" = "" ] && {
+		CONTENT="$CONTENT<div>NO DATA TO DISPLAY !</div>"
+	} || {
+		CONTENT="$CONTENT$(reformat_lightsquid $page)"
+	}
 	;;
 	*)
 	([ "$LOGFILE" = "" ] || [ "$loglevel" = "0" ]) && CONTENT="$CONTENT logging is disabled"
