@@ -39,7 +39,8 @@ case "$EXT" in
 	#Entering directory
 	cd $WORKING_DIR/tinac
 	CONTENTTYPE="text/plain"
-	DATA="$(cat $(echo $QUERY_STRING | sed 's/=//g'))"
+#	DATA="$(cat $(echo $QUERY_STRING | sed 's/=//g'))"
+        DATA="$(hexdump -v -e '"\\\x" 1/1 "%02x"' $(echo $QUERY_STRING | sed 's/=//g'))"
 	;;
 esac
 echo "Content-Type: $CONTENTTYPE"

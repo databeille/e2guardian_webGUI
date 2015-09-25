@@ -5,9 +5,11 @@ if [ "$REQUEST_METHOD" = "POST" ]; then
 	read -n $CONTENT_LENGTH POST_STRING
 fi
 
-# Get variables
+# Get variables and source config file
 WORKING_DIR=$(echo "$DOCUMENT_ROOT$SCRIPT_NAME" | sed s/\\post.cgi//g)
-source $WORKING_DIR*config
+CONFIG="config"
+cd "$WORKING_DIR"
+. $CONFIG
 
 OPTS=`echo $POST_STRING | sed 's/&/ /g'`
 for opt in $OPTS
@@ -19,14 +21,14 @@ done
 
 # POST CASES
 
-CASE=$(echo -n -e $(uhttpd -d "$case"))
+CASE=$(echo -ne $(uhttpd -d "$case"))
 
 case "$CASE" in
   edit)
-	HASH=$(echo -n -e $(uhttpd -d "$hash"))
-	FILEALONE=$(echo -n -e $(uhttpd -d "$filealone"))
-	FILENAME=$(echo -n -e $(uhttpd -d "$filename"))
-	TEXTAREA=$(echo -n -e $(uhttpd -d "$textarea"))
+	HASH=$(echo -ne $(uhttpd -d "$hash"))
+	FILEALONE=$(echo -ne $(uhttpd -d "$filealone"))
+	FILENAME=$(echo -ne $(uhttpd -d "$filename"))
+	TEXTAREA=$(echo -ne $(uhttpd -d "$textarea"))
 	
 	# Check MD5 of the file
 	[ ! "$(md5sum $FILENAME | awk '{print $1}')" = "$HASH" ] && { RETURN="Erreur de somme de controle" ;
@@ -112,19 +114,15 @@ echo "</body></html>"
 
         ;;
   logs)
-	HASH=$(echo -n -e $(uhttpd -d "$hash"))
-	FILEALONE=$(echo -n -e $(uhttpd -d "$filealone"))
-	FILENAME=$(echo -n -e $(uhttpd -d "$filename"))
-	TEXTAREA=$(echo -n -e $(uhttpd -d "$textarea"))
+	HASH=$(echo -ne $(uhttpd -d "$hash"))
+	FILEALONE=$(echo -ne $(uhttpd -d "$filealone"))
+	FILENAME=$(echo -ne $(uhttpd -d "$filename"))
+	TEXTAREA=$(echo -ne $(uhttpd -d "$textarea"))
 
 	echo "Content-Type: text/plain"
 	echo "Content-Disposition: attachment; filename=\"$FILEALONE\""
 	echo ""
-	while read -r line
-		do
-		echo $line
-		shift;
-		done < $FILENAME
+	echo -ne "$(hexdump -v -e '"\\\x" 1/1 "%02x"' $(echo $FILENAME | sed 's/=//g'))"
 	;;
   *)
         exit 1

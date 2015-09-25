@@ -71,6 +71,15 @@ case "$ACTION" in
 		[ "$PERCENT" -le "9" ] && PERCENT="0$PERCENT"
 		echo "$PERCENT%"
 	;;
+	version)
+		# returns version of the program
+		echo "$(opkg list-installed | grep DTB_WebFilter)"
+	;;
+	send_file)
+		# returns hexdump of file a content
+		# takes filename as first parameter
+		echo "$(hexdump -v -e '"\\\x" 1/1 "%02x"' $(echo $2 | sed 's/=//g'))"
+	;;
 	*)
 		echo "Unknown command"
 	;;

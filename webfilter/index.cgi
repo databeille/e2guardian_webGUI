@@ -2,8 +2,9 @@
 
 # Get variables and source config file
 WORKING_DIR=$(echo "$DOCUMENT_ROOT$SCRIPT_NAME" | sed s/\\index.cgi//g)
+CONFIG="config"
 cd "$WORKING_DIR"
-source config
+. $CONFIG
 
 # Catch HTTP GET values and set variables
 OPTS=`echo $QUERY_STRING | sed 's/&/ /g'`
@@ -79,6 +80,13 @@ LOGS="$LOGS<li><a href=\"?logs=$(echo $LOGFILE | sed "s@$LOGFILEDIRNAME/@@g")\">
 LOGS="$LOGS<li><a href=\"?logs=stats\">Statistics</a></li>"
 
 LOGS="$LOGS</ul></li>"
+
+# Menu for informations
+INFO="<li class=\"dropdown\"><a class=\"menu\" href=\"#\">?</a><ul class=\"dropdown-menu\">"
+INFO="$INFO<li><a href=\"#\">Credits</a></li>"
+INFO="$INFO<li><a href=\"#\">$(./command.cgi version)</a></li>"
+
+INFO="$INFO</ul></li>"
 
 # Starting a menu
 MENU="<div id=\"menu\"><div id=\"main_menu\" class=\"pure-menu\"><ul>"
@@ -191,7 +199,7 @@ case "$logs" in
 esac
 	
 }
-echo "Content-type: text/html"
+echo "Content-type: text/html; charset=utf-8"
 echo 
 
 #echo "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">"
@@ -200,6 +208,8 @@ echo "<head>"
 echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />"
 echo "<title>Filtre Web e2guardian</title>"
 echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"tinac.cgi?style/rendering.css\" />"
+echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"tinac.cgi?style/bootstrap.min.css\" />"
+echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"tinac.cgi?style/bootstrap-responsive.min.css\" />"
 echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"tinac.cgi?style/side-menu.css\" />"
 echo "</head><body>"
 echo "<header>"
@@ -209,6 +219,7 @@ echo "<a class=\"brand\" href=\"#\">E2Guardian</a>"
 echo "<ul class=\"nav\">"
 echo "$E2GF1"
 echo "$LOGS"
+echo "$INFO"
 echo "</ul>"
 echo "</div>"
 echo "</div>"
