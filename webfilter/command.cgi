@@ -41,7 +41,7 @@ case "$ACTION" in
 			echo "$E2GCONFIG"
 		} || {
 			echo "$(grep -i -e "$2 = " $E2GCONFIG | \
-			awk -F= '{print $2}' |  sed "s/ //g")"
+			awk -F= '{print $2}' |  sed "s/[' ]//g")"
 		}
 	;;
 	e2fconfig)
