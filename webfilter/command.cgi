@@ -15,6 +15,7 @@ case "$ACTION" in
 	checklogformat)
 		# Check log format allows us to generate stats
 		# Fix log format and logfile before lightsquid starts parsing
+		# Stores and compresses old missformated logfile
 		[ ! "$(./command.cgi e2config logfileformat)" = "3" ] && {
 			/etc/init.d/e2guardian stop
 			uci set e2guardian.e2guardian.logfileformat=3
@@ -26,6 +27,7 @@ case "$ACTION" in
 			CONVERTEDLOG="$(echo $LOGLOCATION | sed 's/'$LOGLOCATIONEXT'$/_convert2ls/')$LOGLOCATIONEXT"
 			cp -f $LOGLOCATION $LOGLOCATION.$(date "+%Y%m%d%H%M")
 			chown nobody:nogroup $LOGLOCATION.$(date "+%Y%m%d%H%M")
+			gzip $LOGLOCATION.$(date "+%Y%m%d%H%M")
 			cp -f $CONVERTEDLOG $LOGLOCATION
 			chown nobody:nogroup $LOGLOCATION
 			rm -f $CONVERTEDLOG
@@ -53,7 +55,6 @@ case "$ACTION" in
 	;;
 	fileext)
 		# returns file extension of the filename given
-		
 		y=${2%.*}
 		echo $(basename $2) | sed 's@'${y##*/}'@@'
 	;;
