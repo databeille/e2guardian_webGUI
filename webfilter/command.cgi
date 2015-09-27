@@ -77,6 +77,7 @@ case "$ACTION" in
 		# Rotate and compress last current log
 		# Includes time of action into filename
 		# Provides a new empty logfile
+		# Returns name of rotated logfile
 		LOGFILE="$(./command.cgi e2config loglocation)"
 		FILEEXT="$(./command.cgi fileext $(basename $LOGFILE))"
 		RKVLOGFILE="$(echo $LOGFILE | sed 's/'$FILEEXT'$/_'$(date "+%Y%m%d%H%M")$FILEEXT'/')"
@@ -85,6 +86,7 @@ case "$ACTION" in
 		cp $LOGFILE $RKVLOGFILE
 		gzip $RKVLOGFILE
 		> $LOGFILE
+		echo "$RKVLOGFILE.gz"
 	;;
 	percent)
 		# returns the percentage of a work in progress
