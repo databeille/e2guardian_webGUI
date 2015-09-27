@@ -1,6 +1,7 @@
 #!/bin/sh
 #
 # Various hard coded commands to switch fonctionalities and retrieve values
+PWD="$PWD"
 
 [ "$1" = "" ] && exit 1
 ACTION="$1"
@@ -9,12 +10,13 @@ ACTION="$1"
 #WORKING_DIR=$(echo "$DOCUMENT_ROOT$SCRIPT_NAME" | sed s/\\command.cgi//g)
 [ "$WORKING_DIR" = "" ] && WORKING_DIR="$(dirname $0)"
 CONFIG="config"
-. $WORKING_DIR/$CONFIG
+cd $WORKING_DIR
+. $CONFIG
 
 case "$ACTION" in
 	checklogformat)
 		# Check log format allows us to generate stats
-		# Fix log format and logfile before lightsquid starts parsing
+		# Fix log format and logfile
 		# Stores and compresses old missformated logfile
 		[ ! "$(./command.cgi e2config logfileformat)" = "3" ] && {
 			/etc/init.d/e2guardian stop
@@ -31,7 +33,6 @@ case "$ACTION" in
 			cp -f $CONVERTEDLOG $LOGLOCATION
 			chown nobody:nogroup $LOGLOCATION
 			rm -f $CONVERTEDLOG
-			./lightsquid/lightparser.pl
 			/etc/init.d/e2guardian start
 		}
 	;;
@@ -84,6 +85,8 @@ case "$ACTION" in
 		echo $RKVLOGFILE
 		# Copy logfile
 		cp $LOGFILE $RKVLOGFILE
+		chown nobody:nogroup $LOGFILE
+		chown nobody:nogroup $RKVLOGFILE
 		gzip $RKVLOGFILE
 		> $LOGFILE
 		echo "$RKVLOGFILE.gz"
@@ -110,3 +113,4 @@ case "$ACTION" in
 	;;
 esac
 
+cd $PWD
