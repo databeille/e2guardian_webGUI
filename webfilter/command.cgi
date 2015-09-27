@@ -77,18 +77,19 @@ case "$ACTION" in
 	logrotate)
 		# Rotate and compress last current log
 		# Includes time of action into filename
-		# Provides a new empty logfile
+		# Provides a new empty logfile and restart e2guardian
 		# Returns name of rotated logfile
 		LOGFILE="$(./command.cgi e2config loglocation)"
 		FILEEXT="$(./command.cgi fileext $(basename $LOGFILE))"
 		RKVLOGFILE="$(echo $LOGFILE | sed 's/'$FILEEXT'$/_'$(date "+%Y%m%d%H%M")$FILEEXT'/')"
 		echo $RKVLOGFILE
 		# Copy logfile
-		cp $LOGFILE $RKVLOGFILE
-		chown nobody:nogroup $LOGFILE
-		chown nobody:nogroup $RKVLOGFILE
+		mv $LOGFILE $RKVLOGFILE
 		gzip $RKVLOGFILE
+		chown nobody:nogroup $RKVLOGFILE.gz
 		> $LOGFILE
+		chown nobody:nogroup $LOGFILE
+		/etc/init.d/e2guardian restart
 		echo "$RKVLOGFILE.gz"
 	;;
 	percent)
