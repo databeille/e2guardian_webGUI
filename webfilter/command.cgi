@@ -26,7 +26,7 @@ case "$ACTION" in
 			cd /www/cgi-bin/webfilter
 			DEFAULTLOG="$(./command.cgi e2config loglocation)"
 			LOGLOCATION="$DEFAULTLOG"
-			[ ! "$1" = "" ] && LOGLOCATION="$1"
+			[ ! "$2" = "" ] && LOGLOCATION="$2"
 			LOGROTATED="$(./command.cgi logrotate $LOGLOCATION nozip)"
 			/etc/init.d/e2guardian start
 			CONVERTEDLOG=$(./convertlog.cgi $LOGROTATED)
@@ -91,9 +91,9 @@ case "$ACTION" in
 		# Returns name of rotated logfile
 		# Takes file to rotate as first parameter, default logfile otherwise
 		# If second parameter is set to "nozip", file will not be gzipped 
-		[ "$2" = "nozip" ] && { GZIP="" ; } || { GZIP=".gz"; }
-		[ ! "$1" = "" ] && {
-		LOGFILE="$1"
+		[ "$3" = "nozip" ] && { GZIP="" ; } || { GZIP=".gz"; }
+		[ ! "$2" = "" ] && {
+		LOGFILE="$2"
 		} || {
 		LOGFILE="$(./command.cgi e2config loglocation)"
 		}
