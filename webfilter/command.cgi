@@ -14,26 +14,36 @@ cd $WORKING_DIR
 . $CONFIG
 
 case "$ACTION" in
-	checklogformat)
+	fixlogformat)
 		# Check log format allows us to generate stats
 		# Fix log format and logfile
 		# Stores and compresses old missformated logfile
+ 		# Takes file to fix as first parameter, default logfile otherwise
 		[ ! "$(./command.cgi e2config logfileformat)" = "3" ] && {
 			/etc/init.d/e2guardian stop
 			uci set e2guardian.e2guardian.logfileformat=3
 			uci commit
 			cd /www/cgi-bin/webfilter
-			./convertlog.cgi
-			LOGLOCATION="$(./command.cgi e2config loglocation)"
-			LOGLOCATIONEXT="$(./command.cgi fileext $LOGLOCATION)"
-			CONVERTEDLOG="$(echo $LOGLOCATION | sed 's/'$LOGLOCATIONEXT'$/_convert2ls/')$LOGLOCATIONEXT"
+			DEFAULTLOG="$(./command.cgi e2config loglocation)"
+			LOGLOCATION="$DEFAULTLOG"
+			[ ! "$1" = "" ] && LOGLOCATION="$1"
+			LOGROTATED="$(./command.cgi logrotate $LOGLOCATION nozip)"
+			/etc/init.d/e2guardian start
+			CONVERTEDLOG=$(./convertlog.cgi $LOGROTATED)
+			LOGLOCATIONEXT="$(./command.cgi fileext $LOGROTATED)"
 			cp -f $LOGLOCATION $LOGLOCATION.$(date "+%Y%m%d%H%M")
 			chown nobody:nogroup $LOGLOCATION.$(date "+%Y%m%d%H%M")
 			gzip $LOGLOCATION.$(date "+%Y%m%d%H%M")
 			cp -f $CONVERTEDLOG $LOGLOCATION
 			chown nobody:nogroup $LOGLOCATION
 			rm -f $CONVERTEDLOG
-			/etc/init.d/e2guardian start
+			[ "$LOGLOCATION" = "$DEFAULTLOG" ] && {
+				/etc/init.d/e2guardian stop
+				cat $DEFAULTLOG >> $LOGLOCATION
+				rm -Rf $DEFAULTLOG
+				mv $LOGLOCATION $DEFAULTLOG
+				/etc/init.d/e2guardian start
+			}
 		}
 	;;
 	e2config)
@@ -79,18 +89,24 @@ case "$ACTION" in
 		# Includes time of action into filename
 		# Provides a new empty logfile and restart e2guardian
 		# Returns name of rotated logfile
+		# Takes file to rotate as first parameter, default logfile otherwise
+		# If second parameter is set to "nozip", file will not be gzipped 
+		[ "$2" = "nozip" ] && { GZIP="" ; } || { GZIP=".gz"; }
+		[ ! "$1" = "" ] && {
+		LOGFILE="$1"
+		} || {
 		LOGFILE="$(./command.cgi e2config loglocation)"
+		}
 		FILEEXT="$(./command.cgi fileext $(basename $LOGFILE))"
 		RKVLOGFILE="$(echo $LOGFILE | sed 's/'$FILEEXT'$/_'$(date "+%Y%m%d%H%M")$FILEEXT'/')"
-		echo $RKVLOGFILE
 		# Copy logfile
 		mv $LOGFILE $RKVLOGFILE
-		gzip $RKVLOGFILE
-		chown nobody:nogroup $RKVLOGFILE.gz
+		[ ! "$GZIP" = "" ] && gzip $RKVLOGFILE
+		chown nobody:nogroup $RKVLOGFILE$GZIP
 		> $LOGFILE
 		chown nobody:nogroup $LOGFILE
-		/etc/init.d/e2guardian restart
-		echo "$RKVLOGFILE.gz"
+		[ "$(grep [e]2guardian)" = "" ] && /etc/init.d/e2guardian restart
+		echo "$RKVLOGFILE$GZIP"
 	;;
 	percent)
 		# returns the percentage of a work in progress

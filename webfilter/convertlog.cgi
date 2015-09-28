@@ -2,14 +2,19 @@
 #
 # This scripts helps convert e2guardian log generated files into
 # squid format
+# If no file is given has first parameter, default logfile will be used
+# Returns name of converted file
 
 # Get variables and source config file
 #WORKING_DIR=$(echo "$DOCUMENT_ROOT$SCRIPT_NAME" | sed s/\\index.cgi//g)
 #source $WORKING_DIR*config
 
+[ ! "$1" == "" ] && {
+LOGFILE="$1"
+} || {
 # Catch logfile info
 LOGFILE="$(./command.cgi e2config loglocation)"
-
+}
 # What is logfile path ?
 LOGFILEPATH="$(dirname $LOGFILE)"
 
@@ -76,3 +81,7 @@ while read line
 	echo -ne "$NEWLINE\n" >> $CONVERTEDLOGFILE
 	shift;
 done < $LOGFILE
+
+# Returns name of the file
+echo "$CONVERTEDLOGFILE"
+
