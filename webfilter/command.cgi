@@ -105,7 +105,7 @@ case "$ACTION" in
 		chown nobody:nogroup $RKVLOGFILE$GZIP
 		> $LOGFILE
 		chown nobody:nogroup $LOGFILE
-		[ "$(grep [e]2guardian)" = "" ] && /etc/init.d/e2guardian restart
+		[ "$(ps | grep [e]2guardian)" = "" ] && /etc/init.d/e2guardian restart
 		echo "$RKVLOGFILE$GZIP"
 	;;
 	percent)
