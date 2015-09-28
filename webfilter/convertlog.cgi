@@ -24,8 +24,8 @@ LOGFILENAME=$(basename $LOGFILE)
 #What is logfile suffix ?
 LOGFILEEXT=$(./command.cgi fileext $LOGFILENAME)
 
-# Converted logfile name includes "_convert2ls" before file extension
-CONVERTEDLOGFILE="$LOGFILEPATH/$(basename $LOGFILENAME $LOGFILEEXT)_convert2ls$LOGFILEEXT"
+# Converted logfile name includes "_C2LS" before file extension
+CONVERTEDLOGFILE="$LOGFILEPATH/$(basename $LOGFILENAME $LOGFILEEXT)_C2LS$LOGFILEEXT"
 
 # Read each line and convert it 
 rm -Rf $CONVERTEDLOGFILE
