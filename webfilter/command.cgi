@@ -19,7 +19,7 @@ case "$ACTION" in
 		# Fix log format and logfile
 		# Stores and compresses old missformated logfile
  		# Takes file to fix as first parameter, default logfile otherwise
-		[ ! "$(./command.cgi e2config logfileformat)" = "3" ] && {
+		#[ ! "$(./command.cgi e2config logfileformat)" = "3" ] && {
 			/etc/init.d/e2guardian stop
 			uci set e2guardian.e2guardian.logfileformat=3
 			uci commit
@@ -44,7 +44,7 @@ case "$ACTION" in
 				mv $LOGLOCATION $DEFAULTLOG
 				/etc/init.d/e2guardian start
 			}
-		}
+		#}
 	;;
 	e2config)
 		# returns E2Guardian config file path if $2 is not set
