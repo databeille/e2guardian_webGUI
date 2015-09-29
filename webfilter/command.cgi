@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Various hard coded commands to switch fonctionalities and retrieve values
 PWD="$PWD"

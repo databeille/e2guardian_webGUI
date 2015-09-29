@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # This scripts helps convert e2guardian log generated files into
 # squid format
