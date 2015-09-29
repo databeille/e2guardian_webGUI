@@ -50,7 +50,7 @@ case "$ACTION" in
 		# returns E2Guardian config file path if $2 is not set
 		# returns E2Guardian config file value if $2 is set
 		E2GCONFIG="$E2G_CONFDIR/e2guardian.conf"
-		[ "$2" == "" ] && {
+		[ "$2" = "" ] && {
 			echo "$E2GCONFIG"
 		} || {
 			echo "$(grep -i -e "$2 = " $E2GCONFIG | \
@@ -68,6 +68,17 @@ case "$ACTION" in
 		# returns file extension of the filename given
 		y=${2%.*}
 		echo $(basename $2) | sed 's@'${y##*/}'@@'
+	;;
+	lsconf)
+		# returns LightSquid config file path if $2 is not set
+		# returns LightSquid config file value if $2 is set
+		LSCONFIG="$LS_CONFDIR/lightsquid.cfg"
+		[ "$2" = "" ] && {
+			echo "$LSCONFIG"
+		} || {
+			echo "$(grep -i -e "\$$2.*=" $LSCONFIG | \
+			awk -F= '{print $2}' |  sed "s/[\"; ]//g")"
+		}
 	;;
 	loglinetype)
 		# returns detected e2guardian's logtype dependending of first field given

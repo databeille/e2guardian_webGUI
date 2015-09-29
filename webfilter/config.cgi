@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Configuration file for e2guardian webGUI
 # This config file will be called with "source"
@@ -25,8 +25,5 @@ mkdir -p $BACKUP
 
 # Where are stored e2guardian configuration files ?
 E2G_CONFDIR="/etc/e2guardian"
-
-# Where are stored lightsquid configuration files ?
-LS_CONFDIR="/www/cgi-bin/webfilter/lightsquid"
 
 

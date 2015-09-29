@@ -9,7 +9,7 @@
 #WORKING_DIR=$(echo "$DOCUMENT_ROOT$SCRIPT_NAME" | sed s/\\index.cgi//g)
 #source $WORKING_DIR*config
 
-[ ! "$1" == "" ] && {
+[ ! "$1" = "" ] && {
 LOGFILE="$1"
 } || {
 # Catch logfile info
@@ -24,8 +24,8 @@ LOGFILENAME=$(basename $LOGFILE)
 #What is logfile suffix ?
 LOGFILEEXT=$(./command.cgi fileext $LOGFILENAME)
 
-# Converted logfile name includes "_C2LS" before file extension
-CONVERTEDLOGFILE="$LOGFILEPATH/$(basename $LOGFILENAME $LOGFILEEXT)_C2LS$LOGFILEEXT"
+# Converted logfile name includes "_convert2ls" before file extension
+CONVERTEDLOGFILE="$LOGFILEPATH/$(basename $LOGFILENAME $LOGFILEEXT)_convert2ls$LOGFILEEXT"
 
 # Read each line and convert it 
 rm -Rf $CONVERTEDLOGFILE

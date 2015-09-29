@@ -20,7 +20,7 @@ for opt in $OPTS
 do
   NAME=`echo $opt | sed 's/=/ /g' | awk '{print $1}'`
   VALUE=`echo $opt | sed 's/=/ /g' | awk '{print $2}' |  sed 's,%,\\\x,g' | sed 's/+/ /g'`
-  [ ! "$VALUE" == "" ] && eval "$NAME=\$VALUE"
+  [ ! "$VALUE" = "" ] && eval "$NAME=\$VALUE"
 done
 
 [ ! "$png" = "" ] && { EXT="png" ; IMAGE="$png" ; }

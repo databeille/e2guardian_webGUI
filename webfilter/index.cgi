@@ -169,8 +169,8 @@ case "$logs" in
 	;;
 	stats)
 	# Display stats tables
-	[ "$page" == "" ] && page="index"
-	[ "$(ls -l lightsquid/report)" = "" ] && {
+	[ "$page" = "" ] && page="index"
+	[ "$(ls -l $(./command.cgi lsconf reportpath))" = "" ] && {
 		CONTENT="$CONTENT<div>NO DATA TO DISPLAY !</div>"
 	} || {
 		CONTENT="$CONTENT$(reformat_lightsquid $page)"
