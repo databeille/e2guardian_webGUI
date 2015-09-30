@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 
 if [ "$REQUEST_METHOD" = "POST" ]; then

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # Various hard coded commands to switch fonctionalities and retrieve values
 PWD="$PWD"
@@ -13,28 +13,45 @@ CONFIG="config"
 cd $WORKING_DIR
 . $CONFIG
 
+make_ip_user () {
+	# OPENWRT: Create realname.cfg file to be used by LightSquid
+	REALNAME_FILE="$(dirname $(./command.cgi lsconf))/realname.cfg"
+	a=0
+	while [ $a -ge 0 ]
+	do
+		REALNAME_NAME=$(uci get dhcp.@host[$a].name)
+		REALNAME_IP=$(uci get dhcp.@host[$a].ip)
+	        sed -i "/^$/d" $REALNAME_FILE
+	        sed -i "/"$REALNAME_IP"/d" $REALNAME_FILE
+		echo -ne "$REALNAME_IP\x09$REALNAME_NAME\n" >> $REALNAME_FILE
+		a=`expr $a + 1`
+		[ ! "$(uci -q get dhcp.@host[$a])" = "host" ] && break
+	done
+}
+
 sed_escape () {
-		shift
-		DATA=$*
-	        # Escaping "\"
-        	DATA=$(sed 's~\\~\\\\~g' <<< $DATA)
-	        # Escaping "/"
-        	DATA=$(sed 's~\/~\\\/~g' <<< $DATA)
-	        # Escaping "$"
-        	DATA=$(sed 's~\$~\\\$~g' <<< $DATA)
-	        # Escaping "."
-        	DATA=$(sed 's~\.~\\\.~g' <<< $DATA)
-	        # Escaping "*"
-        	DATA=$(sed 's~\*~\\\*~g' <<< $DATA)
-	        # Escaping "["
-        	DATA=$(sed 's~\[~\\\[~g' <<< $DATA)
-	        # Escaping "]"
-        	DATA=$(sed 's~\]~\\\]~g' <<< $DATA)
-	        # Escaping "^"
-        	DATA=$(sed 's~\^~\\\^~g' <<< $DATA)
-	        # Escaping "&"
-        	DATA=$(sed 's~\&~\\\&~g' <<< $DATA)
-		echo -ne $DATA
+	# Helps escape string to comply with sed rewriting
+	shift
+	DATA=$*
+	# Escaping "\"
+	DATA=$(echo $DATA | sed 's~\\~\\\\~g')
+	# Escaping "/"
+	DATA=$(echo $DATA | sed 's~\/~\\\/~g')
+	# Escaping "$"
+	DATA=$(echo $DATA | sed 's~\$~\\\$~g')
+	# Escaping "."
+	DATA=$(echo $DATA | sed 's~\.~\\\.~g')
+	# Escaping "*"
+	DATA=$(echo $DATA | sed 's~\*~\\\*~g')
+	# Escaping "["
+	DATA=$(echo $DATA | sed 's~\[~\\\[~g')
+	# Escaping "]"
+	DATA=$(echo $DATA | sed 's~\]~\\\]~g')
+	# Escaping "^"
+	DATA=$(echo $DATA | sed 's~\^~\\\^~g')
+	# Escaping "&"
+	DATA=$(echo $DATA | sed 's~\&~\\\&~g')
+	echo -ne $DATA
 }
 
 case "$ACTION" in
@@ -143,6 +160,10 @@ case "$ACTION" in
 		[ "$(ps | grep [e]2guardian)" = "" ] && /etc/init.d/e2guardian restart
 		echo "$RKVLOGFILE$GZIP"
 	;;
+	make_ip_user)
+		$1
+	;;
+
 	percent)
 		# returns the percentage of a work in progress
 		# takes total amount of work to process as parameter $2
