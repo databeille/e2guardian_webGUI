@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Get variables and source config file
 WORKING_DIR=$(echo "$DOCUMENT_ROOT$SCRIPT_NAME" | sed s/\\index.cgi//g)

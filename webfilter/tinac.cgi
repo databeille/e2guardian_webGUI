@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # TINAC stands for "This Is Not A CGI"
 # It helps display file content for cgi-bin purpose

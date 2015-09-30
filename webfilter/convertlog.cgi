@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # This scripts helps convert e2guardian log generated files into
 # squid format
@@ -42,30 +42,38 @@ while read line
 	case "$LOGLINETYPE" in
 		csv)
 		# "TIME" field
-		FIELD_01=`date -d "$(echo $line | cut -d, -f1 | sed 's/\"//g' | sed 's/\./-/g')" "+%s.000"`
+		FIELD_01=`date -d "$(echo -ne $line | awk '{ printf "%s\n", $1 }' FPAT='([^,]+)|("[^"]+")' | sed 's/\"//g' | sed 's/\./-/g')" "+%s.000"`
+#		FIELD_01=`date -d "$(echo $line | cut -d, -f1 | sed 's/\"//g' | sed 's/\./-/g')" "+%s.000"`
 		# "DURATION" field, 6 chars long
 		FIELD_02="     0"
 		# "CLIENT_ADDRESS" field
-		FIELD_03=`echo $line | cut -d, -f3 | sed 's/\"//g'`
+		FIELD_03=`echo -ne $line | awk '{ printf "%s\n", $3 }' FPAT='([^,]+)|("[^"]+")' | sed 's/\"//g'`
+#		FIELD_03=`echo $line | cut -d, -f3 | sed 's/\"//g'`
 		# "HITMISS" field
-		FIELD_04=`echo $line | cut -d, -f11 | sed 's/\"//g'`
+		FIELD_04=`echo -ne $line | awk '{ printf "%s\n", $11 }' FPAT='([^,]+)|("[^"]+")' | sed 's/\"//g'`
+#		FIELD_04=`echo $line | cut -d, -f11 | sed 's/\"//g'`
 		[ "$FIELD_04" = "403" ] && {
         		FIELD_04="TCP_DENIED/403";
 			} || {
 			FIELD_04="TCP_MISS/$FIELD_04"
 		}
 		# "SSIZE" field
-		FIELD_05=`echo $line | cut -d, -f7 | sed 's/\"//g'`
+		FIELD_05=`echo -ne $line | awk '{ printf "%s\n", $7 }' FPAT='([^,]+)|("[^"]+")' | sed 's/\"//g'`
+#		FIELD_05=`echo $line | cut -d, -f7 | sed 's/\"//g'`
 		# "HOW" field
-		FIELD_06=`echo $line | cut -d, -f6 | sed 's/\"//g'`
+		FIELD_06=`echo -ne $line | awk '{ printf "%s\n", $6 }' FPAT='([^,]+)|("[^"]+")' | sed 's/\"//g'`
+#		FIELD_06=`echo $line | cut -d, -f6 | sed 's/\"//g'`
 		# "WHERE" field
-		FIELD_07=`echo $line | cut -d, -f4 | sed 's/\"//g'`
+		FIELD_07=`echo -ne $line | awk '{ printf "%s\n", $4 }' FPAT='([^,]+)|("[^"]+")' | sed 's/\"//g'`
+#		FIELD_07=`echo $line | cut -d, -f4 | sed 's/\"//g'`
 		# "WHO" field
-		FIELD_08=`echo $line | cut -d, -f2 | sed 's/\"//g'`
+		FIELD_08=`echo -ne $line | awk '{ printf "%s\n", $2 }' FPAT='([^,]+)|("[^"]+")' | sed 's/\"//g'`
+#		FIELD_08=`echo $line | cut -d, -f2 | sed 's/\"//g'`
 		# "HIER" field
 		FIELD_09="DEFAULT_PARENT/127.0.0.1"
 		# "MIMETYPE" field
-		FIELD_10=`echo $line | cut -d, -f12 | sed 's/\"//g'`
+		FIELD_10=`echo -ne $line | awk '{ printf "%s\n", $12 }' FPAT='([^,]+)|("[^"]+")' | sed 's/\"//g'`
+#		FIELD_10=`echo $line | cut -d, -f12 | sed 's/\"//g'`
 
 		# Building line to include
 		NEWLINE="$FIELD_01 $FIELD_02 $FIELD_03 $FIELD_04 $FIELD_05 $FIELD_06 $FIELD_07 $FIELD_08 $FIELD_09 $FIELD_10"

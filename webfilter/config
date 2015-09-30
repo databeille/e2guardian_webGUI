@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Configuration file for e2guardian webGUI
 # This config file will be called with "source"
