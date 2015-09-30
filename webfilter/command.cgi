@@ -13,6 +13,27 @@ CONFIG="config"
 cd $WORKING_DIR
 . $CONFIG
 
+sed_escape() {
+	DATA="${2}"
+        # Escaping "\"
+        DATA="$(echo "$DATA" | sed 's~\\~\\\\~g')"
+        # Escaping "/"
+        DATA="$(echo "$DATA" | sed 's~\/~\\\/~g')"
+        # Escaping "$"
+        DATA="$(echo "$DATA" | sed 's~\$~\\\$~g')"
+        # Escaping "."
+        DATA="$(echo "$DATA" | sed 's~\.~\\\.~g')"
+        # Escaping "*"
+        DATA="$(echo "$DATA" | sed 's~\*~\\\*~g')"
+        # Escaping "["
+        DATA="$(echo "$DATA" | sed 's~\[~\\\[~g')"
+        # Escaping "]"
+        DATA="$(echo "$DATA" | sed 's~\]~\\\]~g')"
+        # Escaping "^"
+        DATA="$(echo "$DATA" | sed 's~\^~\\\^~g')"
+        echo "$DATA"
+}
+
 case "$ACTION" in
 	fixlogformat)
 		# Check log format allows us to generate stats
@@ -135,6 +156,9 @@ case "$ACTION" in
 		# returns hexdump of file a content
 		# takes filename as first parameter
 		echo "$(hexdump -v -e '"\\\x" 1/1 "%02x"' $(echo $2 | sed 's/=//g'))"
+	;;
+	sed_escape)
+		eval '$1 $*'
 	;;
 	*)
 		echo "Unknown command"

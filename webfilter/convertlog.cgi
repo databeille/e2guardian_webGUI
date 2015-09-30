@@ -40,7 +40,7 @@ while read line
 	# What's logline type ?
 	LOGLINETYPE=$(./command.cgi loglinetype $(echo $line | awk '{ printf "%s\n", $1 }' FPAT='([^,]+)|("[^"]+")'))
 	# echoing percentage
-	echo -ne "$(./command.cgi percent $NBLINES $LINENUMBER)\r"
+	echo -ne "$LINENUMBER/$NBLINES : $(./command.cgi percent $NBLINES $LINENUMBER)\r"
 
 	case "$LOGLINETYPE" in
 		csv)
@@ -86,7 +86,7 @@ while read line
 
 		# Building line to include
 		NEWLINE="$FIELD_01 $FIELD_02 $FIELD_03 $FIELD_04 $FIELD_05 $FIELD_06 $FIELD_07 $FIELD_08 $FIELD_09 $FIELD_10"
-		[ ! "$JSON" = "" ] && NEWLINE=`sed 's/##JSON##/'$JSON'/g' <<< $NEWLINE`
+		[ ! "$JSON" = "" ] && NEWLINE=`sed 's/##JSON##/'$(./command.cgi sed_escape $JSON)'/g' <<< $NEWLINE`
 		;;
 		squid)
 		NEWLINE="$line"		
