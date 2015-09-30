@@ -6,7 +6,9 @@
 # Returns name of converted file
 
 # Get variables and source config file
-#WORKING_DIR=$(echo "$DOCUMENT_ROOT$SCRIPT_NAME" | sed s/\\index.cgi//g)
+WORKING_DIR=$(echo "$DOCUMENT_ROOT$SCRIPT_NAME" | sed s/\\index.cgi//g)
+WORKING_DIR=$(dirname $0)
+cd $WORKING_DIR
 #source $WORKING_DIR*config
 
 [ ! "$1" = "" ] && {
@@ -36,22 +38,23 @@ while read line
 	do
 	LINENUMBER=$((LINENUMBER+1))
 	# What's logline type ?
-	LOGLINETYPE=$(./command.cgi loglinetype $(echo $line | cut -d" " -f1))
-	PERCENT=$(./command.cgi percent $NBLINES $LINENUMBER)
-	echo -ne "$PERCENT\r"
+	LOGLINETYPE=$(./command.cgi loglinetype $(echo $line | awk '{ printf "%s\n", $1 }' FPAT='([^,]+)|("[^"]+")'))
+	# echoing percentage
+	echo -ne "$(./command.cgi percent $NBLINES $LINENUMBER)\r"
+
 	case "$LOGLINETYPE" in
 		csv)
 		# Exception to handle JSON parameters in URL
 		JSON=`echo -ne $line | grep -o '{.*}'`
 		[ ! "$JSON" = "" ] && {
-			oldline="$line"
-			line=`echo -ne $line | sed 's/'$JSON'/##JSON##/g'`
+			oldline=$line
+			line=`echo -ne $oldline | sed 's/'$JSON'/##JSON##/g'`
 		}
 		# "TIME" field
 		FIELD_01=`date -d "$(echo -ne $line | awk '{ printf "%s\n", $1 }' FPAT='([^,]+)|("[^"]+")' | sed 's/\"//g' | sed 's/\./-/g')" "+%s.000"`
 #		FIELD_01=`date -d "$(echo $line | cut -d, -f1 | sed 's/\"//g' | sed 's/\./-/g')" "+%s.000"`
 		# "DURATION" field, 6 chars long
-		FIELD_02="     0"
+		FIELD_02="\x20\x20\x20\x20\x20\x30" # hexdump value for "     0"
 		# "CLIENT_ADDRESS" field
 		FIELD_03=`echo -ne $line | awk '{ printf "%s\n", $3 }' FPAT='([^,]+)|("[^"]+")' | sed 's/\"//g'`
 #		FIELD_03=`echo $line | cut -d, -f3 | sed 's/\"//g'`
@@ -83,8 +86,7 @@ while read line
 
 		# Building line to include
 		NEWLINE="$FIELD_01 $FIELD_02 $FIELD_03 $FIELD_04 $FIELD_05 $FIELD_06 $FIELD_07 $FIELD_08 $FIELD_09 $FIELD_10"
-		[ ! "$JSON" = "" ] && NEWLINE=`echo -ne $NEWLINE | sed 's/##JSON##/'$JSON'/g'`
-
+		[ ! "$JSON" = "" ] && NEWLINE=`sed 's/##JSON##/'$JSON'/g' <<< $NEWLINE`
 		;;
 		squid)
 		NEWLINE="$line"		
