@@ -41,6 +41,12 @@ while read line
 	echo -ne "$PERCENT\r"
 	case "$LOGLINETYPE" in
 		csv)
+		# Exception to handle JSON parameters in URL
+		JSON=`echo $line | grep -o '{.*}'`
+		[ ! "$JSON" = "" ] && {
+			oldline="$line"
+			line=`echo $line | sed 's/'$JSON'/##JSON##/g'`
+		}
 		# "TIME" field
 		FIELD_01=`date -d "$(echo -ne $line | awk '{ printf "%s\n", $1 }' FPAT='([^,]+)|("[^"]+")' | sed 's/\"//g' | sed 's/\./-/g')" "+%s.000"`
 #		FIELD_01=`date -d "$(echo $line | cut -d, -f1 | sed 's/\"//g' | sed 's/\./-/g')" "+%s.000"`
@@ -77,6 +83,8 @@ while read line
 
 		# Building line to include
 		NEWLINE="$FIELD_01 $FIELD_02 $FIELD_03 $FIELD_04 $FIELD_05 $FIELD_06 $FIELD_07 $FIELD_08 $FIELD_09 $FIELD_10"
+		[ ! "$JSON" = "" ] && NEWLINE=`echo $NEWLINE | sed 's/##JSON##/'$JSON'/g'`
+
 		;;
 		squid)
 		NEWLINE="$line"		
