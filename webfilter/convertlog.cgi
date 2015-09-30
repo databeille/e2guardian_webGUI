@@ -41,14 +41,13 @@ while read line
 	LOGLINETYPE=$(./command.cgi loglinetype $(echo $line | awk '{ printf "%s\n", $1 }' FPAT='([^,]+)|("[^"]+")'))
 	# echoing percentage
 	echo -ne "$LINENUMBER/$NBLINES : $(./command.cgi percent $NBLINES $LINENUMBER)\r"
-
 	case "$LOGLINETYPE" in
 		csv)
 		# Exception to handle JSON parameters in URL
 		JSON=`./command.cgi sed_escape "$(echo -ne $line | grep -o '{.*}')"`
 		[ ! "$JSON" = "" ] && {
 			oldline=$line
-			line=`echo -ne $oldline | sed 's/"'$JSON'"/##JSON##/g'`
+			line=`echo -ne $oldline | sed 's/'$JSON'/##JSON##/'`
 		}
 		# "TIME" field
 		FIELD_01=`date -d "$(echo -ne $line | awk '{ printf "%s\n", $1 }' FPAT='([^,]+)|("[^"]+")' | sed 's/\"//g' | sed 's/\./-/g')" "+%s.000"`
@@ -86,7 +85,7 @@ while read line
 
 		# Building line to include
 		NEWLINE="$FIELD_01 $FIELD_02 $FIELD_03 $FIELD_04 $FIELD_05 $FIELD_06 $FIELD_07 $FIELD_08 $FIELD_09 $FIELD_10"
-#		[ ! "$JSON" = "" ] && NEWLINE=`sed 's/##JSON##/'$JSON'/g' <<< $NEWLINE`
+		[ ! "$JSON" = "" ] && NEWLINE=`echo $NEWLINE | sed 's/'##JSON##'/'$JSON'/'`
 		;;
 		squid)
 		NEWLINE="$line"		

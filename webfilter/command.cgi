@@ -32,6 +32,8 @@ sed_escape () {
         	DATA=$(sed 's~\]~\\\]~g' <<< $DATA)
 	        # Escaping "^"
         	DATA=$(sed 's~\^~\\\^~g' <<< $DATA)
+	        # Escaping "&"
+        	DATA=$(sed 's~\&~\\\&~g' <<< $DATA)
 		echo -ne $DATA
 }
 
