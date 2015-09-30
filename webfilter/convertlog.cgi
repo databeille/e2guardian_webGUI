@@ -45,7 +45,7 @@ while read line
 	case "$LOGLINETYPE" in
 		csv)
 		# Exception to handle JSON parameters in URL
-		JSON=`echo -ne $line | grep -o '{.*}'`
+		JSON=`$(./command.cgi sed_escape "$(echo -ne $line | grep -o '{.*}')")`
 		[ ! "$JSON" = "" ] && {
 			oldline=$line
 			line=`echo -ne $oldline | sed 's/'$JSON'/##JSON##/g'`

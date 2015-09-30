@@ -13,25 +13,26 @@ CONFIG="config"
 cd $WORKING_DIR
 . $CONFIG
 
-sed_escape() {
-	DATA="${2}"
-        # Escaping "\"
-        DATA="$(echo "$DATA" | sed 's~\\~\\\\~g')"
-        # Escaping "/"
-        DATA="$(echo "$DATA" | sed 's~\/~\\\/~g')"
-        # Escaping "$"
-        DATA="$(echo "$DATA" | sed 's~\$~\\\$~g')"
-        # Escaping "."
-        DATA="$(echo "$DATA" | sed 's~\.~\\\.~g')"
-        # Escaping "*"
-        DATA="$(echo "$DATA" | sed 's~\*~\\\*~g')"
-        # Escaping "["
-        DATA="$(echo "$DATA" | sed 's~\[~\\\[~g')"
-        # Escaping "]"
-        DATA="$(echo "$DATA" | sed 's~\]~\\\]~g')"
-        # Escaping "^"
-        DATA="$(echo "$DATA" | sed 's~\^~\\\^~g')"
-        echo "$DATA"
+sed_escape () {
+		shift
+		DATA=$*
+	        # Escaping "\"
+        	DATA=$(sed 's~\\~\\\\~g' <<< $DATA)
+	        # Escaping "/"
+        	DATA=$(sed 's~\/~\\\/~g' <<< $DATA)
+	        # Escaping "$"
+        	DATA=$(sed 's~\$~\\\$~g' <<< $DATA)
+	        # Escaping "."
+        	DATA=$(sed 's~\.~\\\.~g' <<< $DATA)
+	        # Escaping "*"
+        	DATA=$(sed 's~\*~\\\*~g' <<< $DATA)
+	        # Escaping "["
+        	DATA=$(sed 's~\[~\\\[~g' <<< $DATA)
+	        # Escaping "]"
+        	DATA=$(sed 's~\]~\\\]~g' <<< $DATA)
+	        # Escaping "^"
+        	DATA=$(sed 's~\^~\\\^~g' <<< $DATA)
+		echo -ne $DATA
 }
 
 case "$ACTION" in
@@ -158,7 +159,7 @@ case "$ACTION" in
 		echo "$(hexdump -v -e '"\\\x" 1/1 "%02x"' $(echo $2 | sed 's/=//g'))"
 	;;
 	sed_escape)
-		eval '$1 $*'
+		$1 $*
 	;;
 	*)
 		echo "Unknown command"
