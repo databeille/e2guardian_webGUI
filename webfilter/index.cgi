@@ -23,7 +23,7 @@ reformat_lightsquid() {
 #		LSCONTENT=$(echo $LSCONTENT)
 
 		## replaces references to "index.cgi"
-		LSCONTENT=`echo "$LSCONTENT" | sed 's/index.cgi/index.cgi?logs=stats/g'`
+		LSCONTENT=`echo "$LSCONTENT" | sed 's/index\.cgi?/index\.cgi?page=index\&logs=stats\&/g'`
 		
 		## replaces references to a direct cgi script
 		set -- topsites month_detail year_detail whousesite day_detail group_detail user_detail user_month user_year bigfiles graph user_time get
@@ -32,9 +32,9 @@ reformat_lightsquid() {
 			[ "$1" = "get" ] && 
 			{	
 				## replaces references to "get.cgi"	
-				LSCONTENT=`echo "$LSCONTENT" | sed 's/get.cgi/tinac.cgi/g'`
+				LSCONTENT=`echo "$LSCONTENT" | sed 's/get\.cgi?/tinac\.cgi?/g'`
 			} || {
-				LSCONTENT=`echo "$LSCONTENT" | sed 's/'$1'.cgi?/index.cgi?logs=stats\&page='$1'\&/g'`
+				LSCONTENT=`echo "$LSCONTENT" | sed 's/'$1'\.cgi?/index\.cgi?page='$1'\&logs=stats\&/g'`
 			}
 			shift;
 		done
