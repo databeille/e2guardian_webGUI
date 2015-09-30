@@ -45,7 +45,7 @@ while read line
 	case "$LOGLINETYPE" in
 		csv)
 		# Exception to handle JSON parameters in URL
-		JSON=`$(./command.cgi sed_escape "$(echo -ne $line | grep -o '{.*}')")`
+		JSON=`echo -ne $line | grep -o '{.*}'`
 		[ ! "$JSON" = "" ] && {
 			oldline=$line
 			line=`echo -ne $oldline | sed 's/'$JSON'/##JSON##/g'`
@@ -86,7 +86,7 @@ while read line
 
 		# Building line to include
 		NEWLINE="$FIELD_01 $FIELD_02 $FIELD_03 $FIELD_04 $FIELD_05 $FIELD_06 $FIELD_07 $FIELD_08 $FIELD_09 $FIELD_10"
-		[ ! "$JSON" = "" ] && NEWLINE=`sed 's/##JSON##/'$(./command.cgi sed_escape $JSON)'/g' <<< $NEWLINE`
+		[ ! "$JSON" = "" ] && NEWLINE=`sed 's/##JSON##/'$JSON'/g' <<< $NEWLINE`
 		;;
 		squid)
 		NEWLINE="$line"		
