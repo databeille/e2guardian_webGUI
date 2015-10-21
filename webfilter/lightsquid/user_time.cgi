@@ -99,7 +99,8 @@ foreach $site (sort {$h{$b}{size} <=> $h{$a}{size}} keys %h)  {
   $printsize =FineDec($size);
   
   $tmp=$hTPL{site};
-  $tmp=~s/##URL##/$site/;
+  $makeurl="<a href=\"http://$site\" target=\"_blank">$site</a>";
+  $tmp=~s/##URL##/$makeurl/;
   for ($h=0;$h<24;$h++) {
     $size = sprintf("%.1f",$hsitetime{$site}[$h]/(1024*1024));
     $size = "." if (0 == $hsitetime{$site}[$h]);
@@ -136,7 +137,8 @@ if ($N > $usertimelimit) {
   $printsize =FineDec($size);
   $HH="00";
   $tmp=$hTPL{site};
-  $tmp=~s/##URL##/$site/;
+  $makeurl="<a href=\"http://$site\" target=\"_blank\">$site</a>";
+  $tmp=~s/##URL##/$makeurl/;
   for ($h=0;$h<24;$h++) {
     $size = sprintf("%.1f",$hsitetime{$site}[$h]/(1024*1024));
     $size = "." if (0 == $hsitetime{$site}[$h]);
