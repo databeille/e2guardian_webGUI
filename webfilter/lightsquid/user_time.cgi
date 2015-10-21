@@ -99,7 +99,7 @@ foreach $site (sort {$h{$b}{size} <=> $h{$a}{size}} keys %h)  {
   $printsize =FineDec($size);
   
   $tmp=$hTPL{site};
-  $makeurl="<a href=\"http://$site\" target=\"_blank">$site</a>";
+  $makeurl="<a href=\"http://$site\" target=\"_blank\">$site</a>";
   $tmp=~s/##URL##/$makeurl/;
   for ($h=0;$h<24;$h++) {
     $size = sprintf("%.1f",$hsitetime{$site}[$h]/(1024*1024));
